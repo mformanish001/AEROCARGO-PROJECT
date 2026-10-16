@@ -1,0 +1,1108 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AeroCargo Practice API",
+    "version": "1.0.0",
+    "description": "Local learning backend. No authentication. Sample quotations only. Gross mode means total weight per row. Piece mode means weight per piece. Weight totals gross/volume/charge are lb; kg is chargeable kg. Imports return partial data, not a validated shipment. Implemented with Python standard library."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current local server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shipments/import": {
+      "post": {
+        "summary": "Parse pasted shipment text",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "patch": {
+                      "type": "object"
+                    },
+                    "found": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "text"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20000
+                  }
+                }
+              },
+              "example": {
+                "text": "Pickup Address: CA90046\nDestination: MAA\nExpected Drop Off: 20-10-2026\nCargo Type: General Cargo\nKnown Shipper: Yes\nCommodity: Textiles & Fashion\nWeight Mode: gross\nUnits: in / lb\nPieces: 2\nLength: 48\nWidth: 40\nHeight: 45\nWeight: 1150\nHandling / Packing: No"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shipments": {
+      "post": {
+        "summary": "Save a shipment",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedShipment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Shipment"
+              },
+              "example": {
+                "pickup": "CA 90046",
+                "origin": "LAX",
+                "destination": "MAA",
+                "dropoff": "2026-10-25",
+                "cargoType": "General Cargo",
+                "commodity": "Textiles & Fashion",
+                "known": true,
+                "stackable": true,
+                "unit": "in",
+                "weightUnit": "lb",
+                "weightMode": "gross",
+                "pickupService": true,
+                "rows": [
+                  {
+                    "pieces": 2,
+                    "l": 48,
+                    "w": 40,
+                    "h": 45,
+                    "weight": 1150
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List saved shipments",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shipments": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SavedShipment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shipments/{id}": {
+      "get": {
+        "summary": "Retrieve shipment",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedShipment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "Replace editable shipment fields (full body required)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedShipment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Shipment"
+              },
+              "example": {
+                "pickup": "CA 90046",
+                "origin": "LAX",
+                "destination": "MAA",
+                "dropoff": "2026-10-25",
+                "cargoType": "General Cargo",
+                "commodity": "Textiles & Fashion",
+                "known": true,
+                "stackable": true,
+                "unit": "in",
+                "weightUnit": "lb",
+                "weightMode": "gross",
+                "pickupService": true,
+                "rows": [
+                  {
+                    "pieces": 2,
+                    "l": 48,
+                    "w": 40,
+                    "h": 45,
+                    "weight": 1150
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/shipments/{id}/quotes": {
+      "get": {
+        "summary": "Get two sample USD quotations",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shipmentId": {
+                      "type": "string"
+                    },
+                    "quotes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "demo": {
+                            "type": "boolean"
+                          },
+                          "currency": {
+                            "type": "string"
+                          },
+                          "pricing": {
+                            "type": "object",
+                            "properties": {
+                              "kg": {
+                                "type": "number"
+                              },
+                              "freight": {
+                                "type": "number"
+                              },
+                              "screen": {
+                                "type": "number"
+                              },
+                              "air": {
+                                "type": "number"
+                              },
+                              "inland": {
+                                "type": "number"
+                              },
+                              "total": {
+                                "type": "number"
+                              },
+                              "rate": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request failed; inspect error.message and error.details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Shipment": {
+        "type": "object",
+        "required": [
+          "pickup",
+          "origin",
+          "destination",
+          "dropoff",
+          "cargoType",
+          "commodity",
+          "known",
+          "stackable",
+          "pickupService",
+          "unit",
+          "weightUnit",
+          "weightMode",
+          "rows"
+        ],
+        "properties": {
+          "pickup": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "origin": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^[A-Za-z]{3}$"
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^[A-Za-z]{3}$"
+          },
+          "dropoff": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "format": "date"
+          },
+          "cargoType": {
+            "type": "string",
+            "enum": [
+              "General Cargo",
+              "Dangerous Goods",
+              "Perishable",
+              "Temperature Controlled",
+              "Live Animals"
+            ]
+          },
+          "commodity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "known": {
+            "type": "boolean"
+          },
+          "stackable": {
+            "type": "boolean"
+          },
+          "pickupService": {
+            "type": "boolean"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "cm",
+              "in"
+            ]
+          },
+          "weightUnit": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "lb"
+            ]
+          },
+          "weightMode": {
+            "type": "string",
+            "enum": [
+              "piece",
+              "gross"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": [
+                "pieces",
+                "l",
+                "w",
+                "h",
+                "weight"
+              ],
+              "properties": {
+                "pieces": {
+                  "type": "integer",
+                  "exclusiveMinimum": true,
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "l": {
+                  "type": "number",
+                  "exclusiveMinimum": true,
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "w": {
+                  "type": "number",
+                  "exclusiveMinimum": true,
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "h": {
+                  "type": "number",
+                  "exclusiveMinimum": true,
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "weight": {
+                  "type": "number",
+                  "exclusiveMinimum": true,
+                  "minimum": 0,
+                  "maximum": 1000000
+                }
+              }
+            }
+          },
+          "aes": {
+            "type": "boolean",
+            "default": false
+          },
+          "hawb": {
+            "type": "boolean",
+            "default": false
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "reference": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "flight": {
+            "type": "string",
+            "maxLength": 5000
+          }
+        }
+      },
+      "SavedShipment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Shipment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "totals": {
+                "type": "object",
+                "properties": {
+                  "pieces": {
+                    "type": "number"
+                  },
+                  "gross": {
+                    "type": "number"
+                  },
+                  "volume": {
+                    "type": "number"
+                  },
+                  "charge": {
+                    "type": "number"
+                  },
+                  "kg": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

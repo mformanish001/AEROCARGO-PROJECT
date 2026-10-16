@@ -1,0 +1,23 @@
+{
+  "pickup": "CA 90046",
+  "origin": "LAX",
+  "destination": "MAA",
+  "dropoff": "2026-10-25",
+  "cargoType": "General Cargo",
+  "commodity": "Textiles & Fashion",
+  "known": true,
+  "stackable": true,
+  "unit": "in",
+  "weightUnit": "lb",
+  "weightMode": "gross",
+  "pickupService": true,
+  "rows": [
+    {
+      "pieces": 2,
+      "l": 48,
+      "w": 40,
+      "h": 45,
+      "weight": 1150
+    }
+  ]
+}

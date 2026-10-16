@@ -1,0 +1,350 @@
+{
+  "info": {
+    "name": "AeroCargo API Practice",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Run in order. Create saves shipmentId automatically. Start the local server first. Use Postman desktop or its Desktop Agent."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "shipmentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Import shipment text",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments/import",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Pickup Address: CA90046\\nDestination: MAA\\nExpected Drop Off: 20-10-2026\\nCargo Type: General Cargo\\nKnown Shipper: Yes\\nCommodity: Textiles & Fashion\\nWeight Mode: gross\\nUnits: in / lb\\nPieces: 2\\nLength: 48\\nWidth: 40\\nHeight: 45\\nWeight: 1150\\nHandling / Packing: No\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Parsed 2 pieces', () => pm.expect(pm.response.json().patch.rows[0].pieces).to.eql(2));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Create shipment",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup\": \"CA 90046\",\n  \"origin\": \"LAX\",\n  \"destination\": \"MAA\",\n  \"dropoff\": \"2026-10-25\",\n  \"cargoType\": \"General Cargo\",\n  \"commodity\": \"Textiles & Fashion\",\n  \"known\": true,\n  \"stackable\": true,\n  \"unit\": \"in\",\n  \"weightUnit\": \"lb\",\n  \"weightMode\": \"gross\",\n  \"pickupService\": true,\n  \"rows\": [\n    {\n      \"pieces\": 2,\n      \"l\": 48,\n      \"w\": 40,\n      \"h\": 45,\n      \"weight\": 1150\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+              "if(pm.response.code===201) pm.collectionVariables.set('shipmentId', pm.response.json().id);",
+              "pm.test('Gross weight is 1150 lb', () => pm.expect(pm.response.json().totals.gross).to.eql(1150));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Retrieve shipment",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/shipments/{{shipmentId}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Update destination",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/shipments/{{shipmentId}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup\": \"CA 90046\",\n  \"origin\": \"LAX\",\n  \"destination\": \"DEL\",\n  \"dropoff\": \"2026-10-25\",\n  \"cargoType\": \"General Cargo\",\n  \"commodity\": \"Textiles & Fashion\",\n  \"known\": true,\n  \"stackable\": true,\n  \"unit\": \"in\",\n  \"weightUnit\": \"lb\",\n  \"weightMode\": \"gross\",\n  \"pickupService\": true,\n  \"rows\": [\n    {\n      \"pieces\": 2,\n      \"l\": 48,\n      \"w\": 40,\n      \"h\": 45,\n      \"weight\": 1150\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Destination changed', () => pm.expect(pm.response.json().destination).to.eql('DEL'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Sample quotes",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/shipments/{{shipmentId}}/quotes",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Two quotations', () => pm.expect(pm.response.json().quotes).to.have.lengthOf(2));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 List shipments",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/shipments",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Missing fields",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Negative weight",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup\": \"CA 90046\",\n  \"origin\": \"LAX\",\n  \"destination\": \"MAA\",\n  \"dropoff\": \"2026-10-25\",\n  \"cargoType\": \"General Cargo\",\n  \"commodity\": \"Textiles & Fashion\",\n  \"known\": true,\n  \"stackable\": true,\n  \"unit\": \"in\",\n  \"weightUnit\": \"lb\",\n  \"weightMode\": \"gross\",\n  \"pickupService\": true,\n  \"rows\": [\n    {\n      \"pieces\": 2,\n      \"l\": 48,\n      \"w\": 40,\n      \"h\": 45,\n      \"weight\": -5\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Invalid date",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup\": \"CA 90046\",\n  \"origin\": \"LAX\",\n  \"destination\": \"MAA\",\n  \"dropoff\": \"2026-02-31\",\n  \"cargoType\": \"General Cargo\",\n  \"commodity\": \"Textiles & Fashion\",\n  \"known\": true,\n  \"stackable\": true,\n  \"unit\": \"in\",\n  \"weightUnit\": \"lb\",\n  \"weightMode\": \"gross\",\n  \"pickupService\": true,\n  \"rows\": [\n    {\n      \"pieces\": 2,\n      \"l\": 48,\n      \"w\": 40,\n      \"h\": 45,\n      \"weight\": 1150\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Shipment not found",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/shipments/does-not-exist",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 Blank importer text",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/shipments/import",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 422', () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+Pickup Address: CA90046
+Destination: MAA
+Expected Drop Off: 20-10-2026
+Cargo Type: General Cargo
+Known Shipper: Yes
+Commodity: Textiles & Fashion
+Weight Mode: gross
+Units: in / lb
+Pieces: 2
+Length: 48
+Width: 40
+Height: 45
+Weight: 1150
+Handling / Packing: No
